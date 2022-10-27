@@ -47,11 +47,7 @@ sidebar<- dashboardSidebar(
                          br(),
                          actionButton("quit", "Quit",onclick = "setTimeout(function(){window.close();},200);",
                                       style='padding:4px; font-size:80%'),
-<<<<<<< HEAD
                          HTML('<p><center><font color="cyan"><br> Version 3.0 </font></center>')
-=======
-                         HTML('<p><center><font color="cyan"><br> Version 2.3 </font></center>')
->>>>>>> 128247b09b8673ae71372adc9ec5e6802e0f1e92
                 )
                         ))
 
@@ -227,29 +223,6 @@ tabItem(tabName = "dati_mancanti",
                   
         )),
 
-<<<<<<< HEAD
-=======
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
->>>>>>> 128247b09b8673ae71372adc9ec5e6802e0f1e92
 # PCA - randomization test ---------------------------------------
 
 tabItem(tabName = "rnd_test",
@@ -264,21 +237,7 @@ tabItem(tabName = "rnd_test",
                   column(12,
                          br()),
                   column(8,
-<<<<<<< HEAD
                          plotOutput('rnd_test_pl',height = "600px"))
-=======
-                         plotOutput('rnd_test_pl',height = "550px")
-                         )
-                  # column(4,
-                  #        uiOutput('pca_missdata_n_comp'),
-                  #        uiOutput('bpcamodel_miss_rec')),
-                  # column(12,
-                  #        br(),
-                  #        verbatimTextOutput('pca_missdata_cmpl'),
-                  #        downloadButton("pca_missdata_dwl"))
-                  
-                  
->>>>>>> 128247b09b8673ae71372adc9ec5e6802e0f1e92
         )),
 # PCA - plots -------------------------------------------------------------
 # PCA - scores plot -------------------------------------------------------

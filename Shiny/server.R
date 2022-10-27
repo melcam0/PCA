@@ -1772,53 +1772,20 @@ observeEvent(input$brnd_test,{
     set.seed(as.numeric(Sys.time()))
     nr <- dim(PCA$dataset)[1];nc <- dim(PCA$dataset)[2]
     n <- as.numeric(input$rnd_test_N)
-<<<<<<< HEAD
     var_rnd <- data.frame(matrix(rep(0,n*as.numeric(PCA$res@nPcs)),nrow = n))
     withProgress(message = 'Randomization:',value = 0, {
     for(i in 1:n){
       incProgress(detail = paste("NumRnd", i),amount = 1/n)
       M_ <- data.frame(matrix(rnorm(n = nr*nc),nrow = nr))
-=======
-    
-    
-    
-    
-    
-    var_rnd <- data.frame(matrix(rep(0,n*as.numeric(PCA$res@nPcs)),nrow = n))
-    
-    withProgress(message = 'Randomization:',value = 0, {
-      
-    
-    for(i in 1:n){
-      
-      
-      incProgress(detail = paste("NumRnd", i),amount = 1/n)
-      
-      
-      M_ <- data.frame(matrix(rnorm(n = nr*nc),nrow = nr))
-      
->>>>>>> 128247b09b8673ae71372adc9ec5e6802e0f1e92
       sgt<-as.integer(PCA$res@nPcs)
       if(!PCA$scale)sgt<-sum(apply(M_,2,var))
       ccs<-'none';if(PCA$scale)ccs<-'uv'
       md<-prep(M_,scale=ccs,center=PCA$center,simple=FALSE,rev=FALSE)
       res<-pca(md$data,method="nipals",nPcs=as.numeric(PCA$res@nPcs),scale=ccs,center=PCA$center)
-<<<<<<< HEAD
       var_rnd[i,] <- res@R2*100
     }
     })
   PCA$rnd <- var_rnd
-=======
-      
-      var_rnd[i,] <- res@R2*100
-      
-      # setWinProgressBar(pb, i,label = sprintf("%d%% done", round(i/n*100)))
-      
-    }
-    })
-  PCA$rnd <- var_rnd
-
->>>>>>> 128247b09b8673ae71372adc9ec5e6802e0f1e92
   }
 })
 
@@ -1827,7 +1794,6 @@ output$rnd_test_pl <- renderPlot({
   n <- as.numeric(input$rnd_test_N)
   var_rnd_mean <- apply(PCA$rnd,2,FUN = 'mean')
   var_rnd_sd <- apply(PCA$rnd,2,FUN = 'sd')
-<<<<<<< HEAD
   var_rnd_ic_sup <- var_rnd_mean+qt(p = 0.975,df = n-1)*var_rnd_sd*(1+1/sqrt(n)) # rispetto CAT ho messo *(1+1/sqrt(n))
   var_rnd_ic_inf <- var_rnd_mean-qt(p = 0.975,df = n-1)*var_rnd_sd*(1+1/sqrt(n))
   require(ggplot2)
@@ -1849,38 +1815,6 @@ output$rnd_test_pl <- renderPlot({
   print(gg)
 })
 
-=======
-  
-  var_rnd_ic_sup <- var_rnd_mean+qt(p = 0.975,df = n-1)*var_rnd_sd
-  var_rnd_ic_inf <- var_rnd_mean-qt(p = 0.975,df = n-1)*var_rnd_sd
-  
-
-  op<-par(pty='s')
-  V<-PCA$res@R2*100
-  
-  xlab<-'Component Number'
-  if(PCA$type=='varimax')xlab<-'Factor Number'
-  plot(V,xlab=xlab,ylab="% Explained Variance",
-       main='Scree plot',ylim=c(0,max(V)*1.2),type='n')
-  for(i in 1:length(V)){
-    if(V[i]!=0){points(i,V[i],col='red') }}
-  lines(1:i,V[1:i],col='red')
-  
-  lines(1:i,var_rnd_mean[1:i],col='green2',lty=2)
-  lines(1:i,var_rnd_ic_sup[1:i],col='green2',lty=3)
-  lines(1:i,var_rnd_ic_inf[1:i],col='green2',lty=3)
-  grid();par(op)
-  # ;rm(V,i,op)
-
-})
-
-output$a <- renderPrint({
-  req(!is.null(PCA$rnd))
-  PCA[[1]]@R2*100
-})
-
-
->>>>>>> 128247b09b8673ae71372adc9ec5e6802e0f1e92
 # PCA - diagnostic: T2 and Q -----------------------------------------------
 
 output$pca_dia_t2andq_title<-renderUI({
