@@ -339,7 +339,7 @@ server <- function (input , output, session ){
 # variabili qualitative ---------------------------------------------------
   
   output$var_quali<-renderUI({
-    checkboxGroupInput(inputId = "var_ql",label = "seleziona le variabili supplementari",
+    checkboxGroupInput(inputId = "var_ql",label = "Select supplementary variables",
                        choices = dati$var,selected =dati$var_ql)
   })
   
@@ -353,7 +353,7 @@ server <- function (input , output, session ){
     if(!length(dati$var_qt)==0){
       dati$var_qt
     }else{
-      "Non ci sono variabili quantitative"
+      "No supplementary variables"
     }
   })
   
@@ -364,7 +364,7 @@ server <- function (input , output, session ){
     selectizeInput(inputId = "var_nr"," ",
                        choices = dati$var_nr,
                    options = list(
-                     placeholder = 'Selezione eventuale colonna nomi righe',
+                     placeholder = 'Select column row names',
                      onInitialize = I('function() { this.setValue(""); }')
                    ))
   })
@@ -409,7 +409,7 @@ server <- function (input , output, session ){
 # oggetti  ------------------------------------------------
   
   output$righe_tolte<-renderUI({
-    checkboxGroupInput(inputId = "righe_tolte",label = "seleziona le righe da cancellare",
+    checkboxGroupInput(inputId = "righe_tolte",label = "Select rows to delete",
                        choices = dati$righe,selected =dati$righe_tolte)
   })
   
@@ -431,7 +431,7 @@ server <- function (input , output, session ){
     if(!length(dati$righe_tolte)==0){
       dati$righe_tolte
     }else{
-     "Non ci sono righe cancellate"
+     "No column row names"
     }
   })
   
