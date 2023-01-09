@@ -47,7 +47,7 @@ sidebar<- dashboardSidebar(
                          br(),
                          actionButton("quit", "Quit",onclick = "setTimeout(function(){window.close();},200);",
                                       style='padding:4px; font-size:80%'),
-                         HTML('<p><center><font color="cyan"><br> Version 3.1 </font></center>')
+                         HTML('<p><center><font color="cyan"><br> Version 3.3 </font></center>')
                 )
                         ))
 
@@ -289,6 +289,7 @@ tabItem(tabName = "loadings",
                          uiOutput('pca_load_rnames'),
                          uiOutput('pca_load_arrows'),
                          uiOutput('pca_load_linecomp'),
+                         uiOutput('pca_load_line_header'),
                          uiOutput('pca_load_compN'),
                          uiOutput('pca_load_cnames'))
                   
@@ -416,7 +417,7 @@ tabItem(tabName = "qcontr",
 tabItem(tabName = "ext_prj",
         fluidPage(titlePanel("Projection on the training set"),
                   column(6,
-                         radioButtons("pca_ext_data_load", "Load the training set",
+                         radioButtons("pca_ext_data_load", "Load the external data set",
                                       choices = c(Paste = "paste",
                                                   Excel = "excel"),
                                       selected = "paste",inline=TRUE)),

@@ -1,5 +1,5 @@
 #define MyAppName "PCA"
-#define MyAppVersion "3.1"
+#define MyAppVersion "3.3"
 #define MyAppExeName "PCA.vbs"
 #define MyAppPublisher ""
 #define MyAppURL ""

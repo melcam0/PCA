@@ -85,7 +85,7 @@ server <- function (input , output, session ){
   
   observeEvent(input$openModal, {
     showModal(
-      modalDialog(title = "Autori:",size = 's',easyClose = TRUE,footer = NULL,
+      modalDialog(title = "Authors:",size = 's',easyClose = TRUE,footer = NULL,
                   
                   tags$img(src = base64enc::dataURI(file = "GC.jpg", mime = "image/jpg")),
                   
@@ -194,6 +194,8 @@ server <- function (input , output, session ){
       require(readxl)
       path<-paste("Dati/",input$lista_esempi,".xlsx",sep="")
       df=read_excel(path = path,sheet = 1,col_names = TRUE)
+      suppressWarnings(colnames(df)[!is.na(as.numeric(colnames(df)))]
+                       <-as.numeric(colnames(df)[!is.na(as.numeric(colnames(df)))]))
       dati$DS<-as.data.frame(df)
       dati$DS_nr<-as.data.frame(df)
       dati$DS_righe<-as.data.frame(df)
@@ -233,6 +235,8 @@ server <- function (input , output, session ){
     tryCatch({
       require(readxl)
       df=read_excel(path = input$file_xlsx$datapath,sheet = input$foglio_n,col_names = input$header)
+      suppressWarnings(colnames(df)[!is.na(as.numeric(colnames(df)))]
+                       <-as.numeric(colnames(df)[!is.na(as.numeric(colnames(df)))]))
       dati$DS<-as.data.frame(df)
       dati$DS_nr<-as.data.frame(df)
       dati$DS_righe<-as.data.frame(df)
@@ -249,7 +253,6 @@ server <- function (input , output, session ){
   
   output$contents_xlsx <- renderTable({
     req(input$file_xlsx)
-    
     if(input$disp_xlx == "head") {
       return(head(dati$DS))
     }
@@ -289,7 +292,7 @@ server <- function (input , output, session ){
   })
   
   observeEvent(input$file_incolla,{
-      df <- tryCatch(read.DIF(file = "clipboard",header = TRUE,transpose = TRUE),
+      df <- tryCatch(read.DIF(file = "clipboard",header = TRUE,transpose = TRUE,check.names = FALSE),
                    error = function(e) "Selezionare un dataset!")
       df <- type.convert(df)
       dati$DS<-as.data.frame(df)
@@ -559,8 +562,8 @@ server <- function (input , output, session ){
     })
 
 output$model_out <- renderPrint({
-  validate(need(nrow(dati$DS)!=0,"Caricare un dataset!"))
-  validate(need(!is.null(PCA$res),"Eseguire il modello!"))
+  validate(need(nrow(dati$DS)!=0,"Load a datset!"))
+  validate(need(!is.null(PCA$res),"Execute the model!"))
   V<-data.frame(PCA$res@R2,PCA$res@R2cum)
   colnames(V)<-c('% Var.expl.','% Var. cum. expl.')
   rownames(V)<-attr(PCA$res@sDev,'names')
@@ -1265,7 +1268,7 @@ output$pca_load_compy <- renderUI({
 output$pca_load_rnames <- renderUI({
   req(!is.null(PCA$res))
   req(input$pca_radio_load_type=='sca')
-  checkboxInput("pca_load_rnames", label = "Row names", value = FALSE)
+  checkboxInput("pca_load_rnames", label = "Variable names", value = FALSE)
 })
 
 output$pca_load_arrows <- renderUI({
@@ -1278,6 +1281,12 @@ output$pca_load_linecomp <- renderUI({
   req(!is.null(PCA$res))
   req(input$pca_radio_load_type=='line')
   textInput("pca_load_linecomp", label = "Components to be plotted (e.g.,1,3,5)", value = "1,2")
+})
+
+output$pca_load_line_header <- renderUI({
+  req(!is.null(PCA$res))
+  req(input$pca_radio_load_type=='line')
+  checkboxInput("pca_load_line_header", label = "Header on the x axis", value = TRUE)
 })
 
 output$pca_load_compN <- renderUI({
@@ -1339,10 +1348,33 @@ output$loading_pl <- renderPlot({
 
   if(input$pca_radio_load_type=='line'){
     req(input$pca_load_linecomp)
+    # req(input$pca_load_line_h)
     req(sum(is.na(as.numeric(unlist(str_split(input$pca_load_linecomp,',')))))==0)
     T<-PCA$res@loadings
+    
+    at <- 1:length(rownames(T))
+    tk <- TRUE
+    # if(length(rownames(T))>15)tk <- FALSE
+    if(length(( rownames(T)))>15){
+      n<-length(rownames(T))
+      m<-floor((n-1)/11)
+      at=seq(1,n,m)
+      rm(n,m)
+    }
+    assex <- 1:length(rownames(T))
+    x_lab <- 'Variable Number'
+    if(input$pca_load_line_header){
+      assex <- rownames(T)
+      x_lab <- ''
+    }
+    
+    
+    
+    
+    
     vi<-as.numeric(unlist(str_split(input$pca_load_linecomp,',')))
-    plot(T[,1],ylab='Loading value',xlab='Variable number',type='n',ylim=c(min(T[,vi]),max(T[,vi])))
+    plot(T[,1],ylab='Loading value',xlab=x_lab,type='n',ylim=c(min(T[,vi]),max(T[,vi])),xaxt='n')
+    axis(side=1, at=at,labels=assex[at],cex.axis=0.8,tick=tk)
     grid()
     for(i in vi)lines(T[,i],col=i)
     legend("bottomleft",legend=as.character(vi),col=vi,lty=1)
@@ -1490,7 +1522,7 @@ output$pca_corr_compy <- renderUI({
 
 output$pca_corr_rnames <- renderUI({
   req(!is.null(PCA$res))
-  checkboxInput("pca_corr_rnames", label = "Row names", value = FALSE)
+  checkboxInput("pca_corr_rnames", label = "Variable names", value = FALSE)
 })
 
 output$pca_corr_arrows <- renderUI({
@@ -2189,7 +2221,9 @@ output$pca_dia_qcontr_dwl <- downloadHandler(
   
   observeEvent(input$pca_ext_data_excel,{
     df <- tryCatch(
-      read_excel(path = input$pca_ext_data_excel$datapath,sheet = 1,col_names = TRUE)  )
+      read_excel(path = input$pca_ext_data_excel$datapath,sheet = 1,col_names = TRUE))
+    suppressWarnings(colnames(df)[!is.na(as.numeric(colnames(df)))]
+                     <-as.numeric(colnames(df)[!is.na(as.numeric(colnames(df)))]))
     dati_ext$DS<-as.data.frame(df)
     dati_ext$DS_nr <- as.data.frame(df)
   })
