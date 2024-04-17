@@ -2229,7 +2229,7 @@ output$pca_dia_qcontr_dwl <- downloadHandler(
   })
   
   observeEvent(input$pca_ext_data_paste,{
-    df <- tryCatch(read.DIF(file = "clipboard",header = TRUE,transpose = TRUE),
+    df <- tryCatch(read.DIF(file = "clipboard",header = TRUE,transpose = TRUE,check.names = FALSE),
                    error = function(e) "Selezionare un dataset!")
     df <- type.convert(df)
     dati_ext$DS<-as.data.frame(df)
@@ -2391,7 +2391,25 @@ output$pca_dia_qcontr_dwl <- downloadHandler(
     D_<-PCA_ext$scores
     
     # plot standard score plot in the new scale 
-    Slim<-c(min(S_[,c(c1_,c2_)],D_[,c(c1_,c2_)]),max(S_[,c(c1_,c2_)],D_[,c(c1_,c2_)]))
+    # Slim<-c(min(S_[,c(c1_,c2_)],D_[,c(c1_,c2_)]),max(S_[,c(c1_,c2_)],D_[,c(c1_,c2_)]))
+    
+    DeltaS1lim=(max(S_[,c1_],D_[,c1_])-min(S_[,c1_],D_[,c1_]))
+    DeltaS2lim=(max(S_[,c2_],D_[,c2_])-min(S_[,c2_],D_[,c2_]))
+    
+    if (DeltaS1lim>DeltaS2lim){
+      Delta<-DeltaS1lim-DeltaS2lim
+      S1lim<-c(min(S_[,c1_],D_[,c1_])-DeltaS1lim*0.05,max(S_[,c1_],D_[,c1_])+DeltaS1lim*0.05)
+      S2lim<-c(min(S_[,c2_],D_[,c2_])-Delta/2-DeltaS1lim*0.05,max(S_[,c2_],D_[,c2_])+Delta/2+DeltaS1lim*0.05)
+    }
+    if (DeltaS2lim>DeltaS1lim){
+      Delta<-DeltaS2lim-DeltaS1lim
+      S1lim<-c(min(S_[,c1_],D_[,c1_])-Delta/2-DeltaS2lim*0.05,max(S_[,c1_],D_[,c1_])+Delta/2+DeltaS2lim*0.05)
+      S2lim<-c(min(S_[,c2_],D_[,c2_])-DeltaS2lim*0.05,max(S_[,c2_],D_[,c2_])+DeltaS2lim*0.05)
+    }
+    
+    
+    
+    
     if(PCA$type=='pca'){
       xl_<-paste('Component ',as.character(c1_),' (',as.character(round(v1_,1)),'% of variance)',sep='')
       yl_<-paste('Component ',as.character(c2_),' (',as.character(round(v2_,1)),'% of variance)',sep='')
@@ -2403,9 +2421,9 @@ output$pca_dia_qcontr_dwl <- downloadHandler(
     
     op<-par(pty='s')
     if(!yn.lb){
-      plot(S_[,c(c1_,c2_)],xlim=Slim,ylim=Slim,pty='o',xlab=xl_,ylab=yl_,col='gray')}
+      plot(S_[,c(c1_,c2_)],xlim=S1lim,ylim=S2lim,pty='o',xlab=xl_,ylab=yl_,col='gray')}
     if(yn.lb){
-      plot(S_[,c(c1_,c2_)],xlim=Slim,ylim=Slim,xlab=xl_,ylab=yl_,type='n')
+      plot(S_[,c(c1_,c2_)],xlim=S1lim,ylim=S2lim,xlab=xl_,ylab=yl_,type='n')
       text(S_[,c(c1_,c2_)],as.character(lb_),col='gray',cex=0.6)
     }
     grid()
@@ -2424,21 +2442,21 @@ output$pca_dia_qcontr_dwl <- downloadHandler(
       theta <- seq(0, 2 * pi, length=1000)
       x <- rad1 * cos(theta)
       y <- rad2 * sin(theta)
-      plot(x, y, type = "l",col='gray',xlim=Slim,ylim=Slim,xlab='',ylab='')
+      plot(x, y, type = "l",col='gray',xlim=S1lim,ylim=S2lim,xlab='',ylab='')
       par(new=TRUE)
       rad1=sqrt((v1_/100*((r-1)/r)*c)*qf(.99,2,r-2)*2*(r^2-1)/(r*(r-2))); 
       rad2=sqrt((v2_/100*((r-1)/r)*c)*qf(.99,2,r-2)*2*(r^2-1)/(r*(r-2)));
       theta <- seq(0, 2 * pi, length=1000)
       x <- rad1 * cos(theta)
       y <- rad2 * sin(theta)
-      plot(x, y, type = "l",col='gray',xlim=Slim,ylim=Slim,xlab='',ylab='',lty=2)
+      plot(x, y, type = "l",col='gray',xlim=S1lim,ylim=S2lim,xlab='',ylab='',lty=2)
       par(new=TRUE)
       rad1=sqrt((v1_/100*((r-1)/r)*c)*qf(.999,2,r-2)*2*(r^2-1)/(r*(r-2))); 
       rad2=sqrt((v2_/100*((r-1)/r)*c)*qf(.999,2,r-2)*2*(r^2-1)/(r*(r-2)));
       theta <- seq(0, 2 * pi, length=1000)
       x <- rad1 * cos(theta)
       y <- rad2 * sin(theta)
-      plot(x, y, type = "l",col='gray',xlim=Slim,ylim=Slim,xlab='',ylab='',lty=3)
+      plot(x, y, type = "l",col='gray',xlim=S1lim,ylim=S2lim,xlab='',ylab='',lty=3)
       par(new=TRUE)
       
     }else{
