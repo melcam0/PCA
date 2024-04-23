@@ -3,7 +3,10 @@ if(!nzchar(system.file(package = "shinydashboard"))) install.packages("shinydash
 if(!nzchar(system.file(package = "shinythemes"))) install.packages("shinythemes")
 if(!nzchar(system.file(package = "shinyWidgets"))) install.packages("shinyWidgets")
 if(!nzchar(system.file(package = "shinyjs"))) install.packages("shinyjs")
-if(!nzchar(system.file(package = "pcaMethods"))) install.packages("pcaMethods")
+if(!nzchar(system.file(package = "pcaMethods"))){
+  install.packages("BiocManager")
+  BiocManager::install("pcaMethods")
+}
 if(!nzchar(system.file(package = "readxl"))) install.packages("readxl")
 if(!nzchar(system.file(package = "ggiraph"))) install.packages("ggiraph")
 if(!nzchar(system.file(package = "openxlsx"))) install.packages("openxlsx")
