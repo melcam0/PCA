@@ -367,7 +367,7 @@ server <- function (input , output, session ){
     selectizeInput(inputId = "var_nr"," ",
                        choices = dati$var_nr,
                    options = list(
-                     placeholder = 'Select column row names',
+                     placeholder = 'Select row names variable',
                      onInitialize = I('function() { this.setValue(""); }')
                    ))
   })
@@ -402,7 +402,7 @@ server <- function (input , output, session ){
   output$nomi_righe<-renderPrint({
     validate(need(nrow(dati$DS)!=0,""))
     if(length(dati$nr)==0){
-      "Non c'è colonna nomi righe "
+      "No row labels variable"
     } else {
       dati$nr
       }
@@ -434,7 +434,7 @@ server <- function (input , output, session ){
     if(!length(dati$righe_tolte)==0){
       dati$righe_tolte
     }else{
-     "No column row names"
+     "No rows selected"
     }
   })
   
@@ -470,7 +470,7 @@ server <- function (input , output, session ){
     validate(need(nrow(dati$DS)!=0,""))
     if(sum(apply(dati$DS[,dati$var_qt],2,'is.numeric'))!=ncol(dati$DS[,dati$var_qt])){
         sendSweetAlert(session, title = "Input Error",
-                       text = 'Le variabili qualitative devono essere selezionate come supplementari!',
+                       text = 'Qualitative variables should be selected as supplementary!',
                        type = "warning",btn_labels = "Ok", html = FALSE, closeOnClickOutside = TRUE)
     }else{
       require(pcaMethods)
@@ -1698,7 +1698,7 @@ output$pca_missdata_n_comp_max<-renderUI({
 observeEvent(input$bpcamodel_miss,{
   if(sum(apply(dati$DS[,dati$var_qt],2,'is.numeric'))!=ncol(dati$DS[,dati$var_qt])){
     sendSweetAlert(session, title = "Input Error",
-                   text = 'Le variabili qualitative devono essere selezionate come supplementari!',
+                   text = 'Qualitative variables should be selected as supplementary!',
                    type = "warning",btn_labels = "Ok", html = FALSE, closeOnClickOutside = TRUE)
   }else{
   require(pcaMethods)
@@ -2316,7 +2316,7 @@ output$pca_dia_qcontr_dwl <- downloadHandler(
         if(sum(apply(dati_ext$DS[,!colnames(dati_ext$DS)%in%input$pca_ext_data_varsup],2,'is.numeric'))!=
            ncol(dati_ext$DS[,!colnames(dati_ext$DS)%in%input$pca_ext_data_varsup])){
           sendSweetAlert(session, title = "Input Error",
-                         text = 'Le variabili qualitative devono essere selezionate come supplementari!',
+                         text = 'Qualitative variables should be selected as supplementary!',
                          type = "warning",btn_labels = "Ok", html = FALSE, closeOnClickOutside = TRUE)
         }else{
           T_<-PCA$res@loadings

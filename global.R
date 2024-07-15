@@ -13,6 +13,8 @@ if(!nzchar(system.file(package = "openxlsx"))) install.packages("openxlsx")
 if(!nzchar(system.file(package = "ggplot2"))) install.packages("ggplot2")
 if(!nzchar(system.file(package = "lattice"))) install.packages("lattice")
 if(!nzchar(system.file(package = "latticeExtra"))) install.packages("latticeExtra")
+if(!nzchar(system.file(package = "chemometrics"))) install.packages("chemometrics")
+
 
 
 library(shiny)

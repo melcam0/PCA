@@ -39,15 +39,15 @@ sidebar<- dashboardSidebar(
                 menuItem(text = "File",icon = icon("briefcase", lib = "font-awesome"),
                          # menuSubItem("Dispensa",tabName = "dispensa"),
                          # menuSubItem("Diapositive",tabName = "diapositive"),
-                         tags$header(
-                           em(  
-                             a(href="https://dispensepca.netlify.app/",  "   Dispense" ,target="_blank",style="white-space: pre-wrap")
-                           )
-                         ),
-                         br(),
+                         # tags$header(
+                         #   em(  
+                         #     a(href="https://dispensepca.netlify.app/",  "   Dispense" ,target="_blank",style="white-space: pre-wrap")
+                         #   )
+                         # ),
+                         # br(),
                          actionButton("quit", "Quit",onclick = "setTimeout(function(){window.close();},200);",
                                       style='padding:4px; font-size:80%'),
-                         HTML('<p><center><font color="cyan"><br> Version 3.4 </font></center>')
+                         HTML('<p><center><font color="cyan"><br> Version 3.5 </font></center>')
                 )
                         ))
 
