@@ -402,7 +402,7 @@ server <- function (input , output, session ){
   output$nomi_righe<-renderPrint({
     validate(need(nrow(dati$DS)!=0,""))
     if(length(dati$nr)==0){
-      "No row labels variable"
+      "No row names variable"
     } else {
       dati$nr
       }
@@ -434,7 +434,7 @@ server <- function (input , output, session ){
     if(!length(dati$righe_tolte)==0){
       dati$righe_tolte
     }else{
-     "No rows selected"
+     "No rows deleted"
     }
   })
   

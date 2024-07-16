@@ -47,7 +47,7 @@ sidebar<- dashboardSidebar(
                          # br(),
                          actionButton("quit", "Quit",onclick = "setTimeout(function(){window.close();},200);",
                                       style='padding:4px; font-size:80%'),
-                         HTML('<p><center><font color="cyan"><br> Version 3.5 </font></center>')
+                         HTML('<p><center><font color="cyan"><br> Version 3.6 </font></center>')
                 )
                         ))
 
@@ -140,13 +140,13 @@ body<-dashboardBody(
                                                     column(12,
                                                            uiOutput("var_nomi"),
                                                            textOutput("avviso_nomi")),
-                                                    column(12,"Nomi righe",
+                                                    column(12,"Row names",
                                                            verbatimTextOutput("nomi_righe"))),
                                            tabPanel("Supplementary variables",
                                                     column(4,
                                                            uiOutput("var_quali"),
                                                            uiOutput('var_quanti_sup')),
-                                                    column(8,"Quantitative variables for pls",
+                                                    column(8,"Quantitative variables for pca",
                                                            verbatimTextOutput("var_quanti")))))),
              
              tabItem(tabName = "oggetti",
