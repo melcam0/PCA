@@ -47,7 +47,7 @@ sidebar<- dashboardSidebar(
                          # br(),
                          actionButton("quit", "Quit",onclick = "setTimeout(function(){window.close();},200);",
                                       style='padding:4px; font-size:80%'),
-                         HTML('<p><center><font color="cyan"><br> Version 3.6 </font></center>')
+                         HTML('<p><center><font color="cyan"><br> Version 3.7 </font></center>')
                 )
                         ))
 
@@ -438,6 +438,7 @@ tabItem(tabName = "ext_prj",
                          uiOutput('pca_ext_data_varnames'),
                          uiOutput('pca_ext_data_varsup'),
                          uiOutput('pca_ext_data_rwnames'),
+                         uiOutput('pca_ext_data_rwnames_tr'),
                          uiOutput('pca_ext_data_compx'),
                          uiOutput('pca_ext_data_compy'),
                          uiOutput('pca_ext_data_rnames'),

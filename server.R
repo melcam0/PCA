@@ -293,7 +293,7 @@ server <- function (input , output, session ){
   
   observeEvent(input$file_incolla,{
       df <- tryCatch(read.DIF(file = "clipboard",header = TRUE,transpose = TRUE,check.names = FALSE),
-                   error = function(e) "Selezionare un dataset!")
+                   error = function(e) "Select a dataset!")
       df <- type.convert(df)
       dati$DS<-as.data.frame(df)
       dati$DS_nr<-as.data.frame(df)
@@ -2230,7 +2230,7 @@ output$pca_dia_qcontr_dwl <- downloadHandler(
   
   observeEvent(input$pca_ext_data_paste,{
     df <- tryCatch(read.DIF(file = "clipboard",header = TRUE,transpose = TRUE,check.names = FALSE),
-                   error = function(e) "Selezionare un dataset!")
+                   error = function(e) "Select a dataset!")
     df <- type.convert(df)
     dati_ext$DS<-as.data.frame(df)
     dati_ext$DS_nr <- as.data.frame(df)
@@ -2274,6 +2274,28 @@ output$pca_dia_qcontr_dwl <- downloadHandler(
                 multiple = TRUE)
   })
   
+  
+  
+  
+  ################
+  
+  
+  output$pca_ext_data_rwnames_tr <- renderUI({
+    req(!is.null(dati_ext$DS))
+    req(!is.null(input$pca_ext_data_varsup))
+    pickerInput("pca_ext_data_rwnames_tr", label = "Label variable training set",
+                choices = input$pca_ext_data_varsup,
+                options =  list(
+                  "max-options" = 1,
+                  "max-options-text" = "No more!"
+                ),
+                multiple = TRUE)
+  })
+  
+  
+  
+  ################
+  
   output$pca_ext_data_compx <- renderUI({
     req(!is.null(PCA$res))
     selectInput("pca_ext_data_compx", label = "Component on x-axis",
@@ -2305,7 +2327,7 @@ output$pca_dia_qcontr_dwl <- downloadHandler(
   
   observeEvent(input$bpcaext,{
     req(!is.null(dati_ext$DS))
-    
+
     if(!is.null(PCA$res)){
       M_<-dati_ext$DS[,!colnames(dati_ext$DS)%in%input$pca_ext_data_varsup]
       if(sum(is.na(M_))!=0){
@@ -2325,9 +2347,9 @@ output$pca_dia_qcontr_dwl <- downloadHandler(
           if(PCA$scale)M_<-M_/(unity%*%PCA$scaled)
           D_<-tryCatch(as.matrix(M_) %*% T_,
                        error = function(e) "errore")
-          if(D_=='errore'){
+          if(sum(D_=='errore')!=0){
             sendSweetAlert(session, title = "Input Error",
-                           text = 'Controllare il numero di variabili!',
+                           text = 'Check the number of variables!',
                            type = "warning",btn_labels = "Ok", html = FALSE, closeOnClickOutside = TRUE)
           }else{
             PCA_ext$scores <- D_
@@ -2343,7 +2365,7 @@ output$pca_dia_qcontr_dwl <- downloadHandler(
   
   output$pca_ext_data_pl <- renderPlot({
     req(!is.null(PCA_ext$scores))
-    
+
     ans <- list()
     # ans[[1]] <- dati_ext$DS[,!colnames(dati_ext$DS)%in%input$pca_ext_data_varsup]
     ans[[2]] <- 'all'
@@ -2358,25 +2380,26 @@ output$pca_dia_qcontr_dwl <- downloadHandler(
     # if(!is.null(input$pca_ext_data_rwnames))ans[[8]] <- TRUE
 
     ans[[9]] <- input$pca_ext_data_ell
-    
+
     c1_<-as.integer(ans[[5]])
     c2_<-as.integer(ans[[6]])
-    
+
     lb_<-NULL
+    if(!is.null(input$pca_ext_data_rwnames_tr))lb_<-dati$DS[,input$pca_ext_data_rwnames_tr]
     if(as.logical(ans[[7]]))lb_<-row.names(PCA$dataset)
-    
+
     lbd<-NULL
     # if(input$pca_ext_data_rnames)lbd <- row.names(dati_ext$DS)
     if(!is.null(input$pca_ext_data_rwnames))lbd<-dati_ext$DS[,input$pca_ext_data_rwnames]
     if(as.logical(ans[[8]]))lbd<-dati_ext$nr
-    
+
     S_<-PCA$res@scores
     v1_<-PCA$res@R2[c1_]*100
     v2_<-PCA$res@R2[c2_]*100
     r<-nrow(S_)
     c<-nrow(PCA$res@loadings)
     if(!PCA$scale)c <- sum(apply(PCA$dataset,2,'var'))
-    
+
     yn.lb<-TRUE
     if(is.null(lb_))yn.lb<-FALSE
     if(yn.lb){
@@ -2387,15 +2410,15 @@ output$pca_dia_qcontr_dwl <- downloadHandler(
       }
     }
     # new dataset evaluation
-    
+
     D_<-PCA_ext$scores
-    
-    # plot standard score plot in the new scale 
+
+    # plot standard score plot in the new scale
     # Slim<-c(min(S_[,c(c1_,c2_)],D_[,c(c1_,c2_)]),max(S_[,c(c1_,c2_)],D_[,c(c1_,c2_)]))
-    
+
     DeltaS1lim=(max(S_[,c1_],D_[,c1_])-min(S_[,c1_],D_[,c1_]))
     DeltaS2lim=(max(S_[,c2_],D_[,c2_])-min(S_[,c2_],D_[,c2_]))
-    
+
     if (DeltaS1lim>DeltaS2lim){
       Delta<-DeltaS1lim-DeltaS2lim
       S1lim<-c(min(S_[,c1_],D_[,c1_])-DeltaS1lim*0.05,max(S_[,c1_],D_[,c1_])+DeltaS1lim*0.05)
@@ -2406,10 +2429,8 @@ output$pca_dia_qcontr_dwl <- downloadHandler(
       S1lim<-c(min(S_[,c1_],D_[,c1_])-Delta/2-DeltaS2lim*0.05,max(S_[,c1_],D_[,c1_])+Delta/2+DeltaS2lim*0.05)
       S2lim<-c(min(S_[,c2_],D_[,c2_])-DeltaS2lim*0.05,max(S_[,c2_],D_[,c2_])+DeltaS2lim*0.05)
     }
-    
-    
-    
-    
+
+
     if(PCA$type=='pca'){
       xl_<-paste('Component ',as.character(c1_),' (',as.character(round(v1_,1)),'% of variance)',sep='')
       yl_<-paste('Component ',as.character(c2_),' (',as.character(round(v2_,1)),'% of variance)',sep='')
@@ -2418,47 +2439,47 @@ output$pca_dia_qcontr_dwl <- downloadHandler(
       yl_<-paste('Factor ',as.character(c2_),' (',as.character(round(v2_,1)),'% of variance)',sep='')
     }
     tl_=paste('Score Plot (',as.character(round((v1_+v2_),1)),'% of total variance)',sep='')
-    
+
     op<-par(pty='s')
     if(!yn.lb){
-      plot(S_[,c(c1_,c2_)],xlim=S1lim,ylim=S2lim,pty='o',xlab=xl_,ylab=yl_,col='gray')}
+      plot(S_[,c(c1_,c2_)],xlim=S1lim,ylim=S2lim,pty='o',xlab=xl_,ylab=yl_,col='darkgray')}
     if(yn.lb){
       plot(S_[,c(c1_,c2_)],xlim=S1lim,ylim=S2lim,xlab=xl_,ylab=yl_,type='n')
-      text(S_[,c(c1_,c2_)],as.character(lb_),col='gray',cex=0.6)
+      text(S_[,c(c1_,c2_)],as.character(lb_),col='darkgray',cex=0.6)
     }
     grid()
     text(0,0,'+',cex=1.2,col='red')
     par(new=TRUE)
-    
+
     if(as.logical(ans[[9]])){
       title(main=tl_,sub='Training: black - External: red - Ellipses: critical T^2 value at p=0.05, 0.01 and 0.001',cex.main=1.2,font.main=2,
             col.main="black",cex.sub=0.6,font.sub=2,col.sub="red")
-      
+
       op<-par(pty='s')
       par(new=TRUE)
-      
-      rad1=sqrt((v1_/100*((r-1)/r)*c)*qf(.95,2,r-2)*2*(r^2-1)/(r*(r-2))); 
+
+      rad1=sqrt((v1_/100*((r-1)/r)*c)*qf(.95,2,r-2)*2*(r^2-1)/(r*(r-2)));
       rad2=sqrt((v2_/100*((r-1)/r)*c)*qf(.95,2,r-2)*2*(r^2-1)/(r*(r-2)));
       theta <- seq(0, 2 * pi, length=1000)
       x <- rad1 * cos(theta)
       y <- rad2 * sin(theta)
-      plot(x, y, type = "l",col='gray',xlim=S1lim,ylim=S2lim,xlab='',ylab='')
+      plot(x, y, type = "l",col='darkgray',xlim=S1lim,ylim=S2lim,xlab='',ylab='')
       par(new=TRUE)
-      rad1=sqrt((v1_/100*((r-1)/r)*c)*qf(.99,2,r-2)*2*(r^2-1)/(r*(r-2))); 
+      rad1=sqrt((v1_/100*((r-1)/r)*c)*qf(.99,2,r-2)*2*(r^2-1)/(r*(r-2)));
       rad2=sqrt((v2_/100*((r-1)/r)*c)*qf(.99,2,r-2)*2*(r^2-1)/(r*(r-2)));
       theta <- seq(0, 2 * pi, length=1000)
       x <- rad1 * cos(theta)
       y <- rad2 * sin(theta)
-      plot(x, y, type = "l",col='gray',xlim=S1lim,ylim=S2lim,xlab='',ylab='',lty=2)
+      plot(x, y, type = "l",col='darkgray',xlim=S1lim,ylim=S2lim,xlab='',ylab='',lty=2)
       par(new=TRUE)
-      rad1=sqrt((v1_/100*((r-1)/r)*c)*qf(.999,2,r-2)*2*(r^2-1)/(r*(r-2))); 
+      rad1=sqrt((v1_/100*((r-1)/r)*c)*qf(.999,2,r-2)*2*(r^2-1)/(r*(r-2)));
       rad2=sqrt((v2_/100*((r-1)/r)*c)*qf(.999,2,r-2)*2*(r^2-1)/(r*(r-2)));
       theta <- seq(0, 2 * pi, length=1000)
       x <- rad1 * cos(theta)
       y <- rad2 * sin(theta)
-      plot(x, y, type = "l",col='gray',xlim=S1lim,ylim=S2lim,xlab='',ylab='',lty=3)
+      plot(x, y, type = "l",col='darkgray',xlim=S1lim,ylim=S2lim,xlab='',ylab='',lty=3)
       par(new=TRUE)
-      
+
     }else{
       title(main=tl_,sub='Training: black - External: red',cex.main=1.2,font.main=2,
             col.main="black",cex.sub=0.6,font.sub=2,col.sub="red")
@@ -2466,7 +2487,7 @@ output$pca_dia_qcontr_dwl <- downloadHandler(
     # new dataset plot
     ynld<-TRUE
     nd<-nrow(D_)
-    if(is.null(lbd))ynld<-FALSE 
+    if(is.null(lbd))ynld<-FALSE
     if(ynld){
       if(length(lbd)!=nd){
         sendSweetAlert(session, title = "Input Error",
