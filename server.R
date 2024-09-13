@@ -2273,13 +2273,7 @@ output$pca_dia_qcontr_dwl <- downloadHandler(
                 ),
                 multiple = TRUE)
   })
-  
-  
-  
-  
-  ################
-  
-  
+
   output$pca_ext_data_rwnames_tr <- renderUI({
     req(!is.null(dati_ext$DS))
     req(!is.null(input$pca_ext_data_varsup))
@@ -2291,11 +2285,7 @@ output$pca_dia_qcontr_dwl <- downloadHandler(
                 ),
                 multiple = TRUE)
   })
-  
-  
-  
-  ################
-  
+
   output$pca_ext_data_compx <- renderUI({
     req(!is.null(PCA$res))
     selectInput("pca_ext_data_compx", label = "Component on x-axis",
@@ -2397,6 +2387,7 @@ output$pca_dia_qcontr_dwl <- downloadHandler(
     v1_<-PCA$res@R2[c1_]*100
     v2_<-PCA$res@R2[c2_]*100
     r<-nrow(S_)
+    siz=.9-log10(r)/10
     c<-nrow(PCA$res@loadings)
     if(!PCA$scale)c <- sum(apply(PCA$dataset,2,'var'))
 
@@ -2412,6 +2403,8 @@ output$pca_dia_qcontr_dwl <- downloadHandler(
     # new dataset evaluation
 
     D_<-PCA_ext$scores
+    r_ext<-nrow(D_)
+    siz_ext=.9-log10(r_ext)/10
 
     # plot standard score plot in the new scale
     # Slim<-c(min(S_[,c(c1_,c2_)],D_[,c(c1_,c2_)]),max(S_[,c(c1_,c2_)],D_[,c(c1_,c2_)]))
@@ -2442,10 +2435,10 @@ output$pca_dia_qcontr_dwl <- downloadHandler(
 
     op<-par(pty='s')
     if(!yn.lb){
-      plot(S_[,c(c1_,c2_)],xlim=S1lim,ylim=S2lim,pty='o',xlab=xl_,ylab=yl_,col='darkgray')}
+      plot(S_[,c(c1_,c2_)],xlim=S1lim,ylim=S2lim,pty='o',xlab=xl_,ylab=yl_,col='black')}
     if(yn.lb){
       plot(S_[,c(c1_,c2_)],xlim=S1lim,ylim=S2lim,xlab=xl_,ylab=yl_,type='n')
-      text(S_[,c(c1_,c2_)],as.character(lb_),col='darkgray',cex=0.6)
+      text(S_[,c(c1_,c2_)],as.character(lb_),col='black',cex=siz)
     }
     grid()
     text(0,0,'+',cex=1.2,col='red')
@@ -2497,7 +2490,7 @@ output$pca_dia_qcontr_dwl <- downloadHandler(
     }
     if(!ynld)points(D_[,c1_],D_[,c2_],col='red')
     if(ynld){points(D_[,c1_],D_[,c2_],type='n')
-      text(D_[,c1_],D_[,c2_],as.character(lbd),col='red',cex=0.7)}
+      text(D_[,c1_],D_[,c2_],as.character(lbd),col='red',cex=siz_ext)}
     par(op)
   })
   
